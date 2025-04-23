@@ -23,7 +23,7 @@ class DroneController(Node):
 
         self.get_logger().info('Preparing to takeoff!')
         
-        # Takeoff after 1 sec
+        # Takeoff after 1 sec 
         self.create_timer(1.0, self.takeoff)
 
     def listener_callback(self, msg):
