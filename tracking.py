@@ -22,18 +22,3 @@ class Tracker(Node):
             self.get_logger().error(f"Could not convert image: {e}")
 
 def main(args=None):
-    rclpy.init(args=args)
-
-    drone_track = Tracker()
-
-    rclpy.spin(drone_track)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    drone_track.destroy_node()
-    rclpy.shutdown()
-
-
-if __name__ == '__main__':
-    main()

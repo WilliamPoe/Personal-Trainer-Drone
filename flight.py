@@ -7,6 +7,7 @@ from sensor_msgs.msg import Image
 import cv2
 from cv_bridge import CvBridge
 import time
+from ultralytics import YOLO
 
 class DroneController(Node):
     def __init__(self):
@@ -20,17 +21,29 @@ class DroneController(Node):
         self.timer_count = 0
         self.bridge = CvBridge()
         self.msg = Empty()
+        self.model = YOLO("yolov8n.pt")
 
-        self.get_logger().info('Preparing to takeoff!')
+        #self.get_logger().info('Preparing to takeoff!')
         
         # Takeoff after 1 sec 
-        self.create_timer(1.0, self.takeoff)
+        #self.create_timer(1.0, self.takeoff)
 
     def listener_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            #while True:
+            #    ret, frame = cv_image.read()
+            #    if not ret:
+            #       self.get_logger().info("No Frame!")
+            #        break
+
+            #    result = self.model.track(frame, persist=True)
+
+            #    frame_ = result[0].plot()
+
             cv2.imshow('Camera Feed', cv_image)
             cv2.waitKey(1)
+            
         except Exception as e:
             self.get_logger().error(f"Could not convert image: {e}")
 
