@@ -8,6 +8,8 @@ import cv2
 from cv_bridge import CvBridge
 import time
 from ultralytics import YOLO
+import os
+
 
 class DroneController(Node):
     def __init__(self):
@@ -31,17 +33,12 @@ class DroneController(Node):
     def listener_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            #while True:
-            #    ret, frame = cv_image.read()
-            #    if not ret:
-            #       self.get_logger().info("No Frame!")
-            #        break
 
-            #    result = self.model.track(frame, persist=True)
+            result = self.model.track(cv_image, persist=True)
 
-            #    frame_ = result[0].plot()
+            frame_ = result[0].plot()
 
-            cv2.imshow('Camera Feed', cv_image)
+            cv2.imshow('Camera Feed', frame_)
             cv2.waitKey(1)
             
         except Exception as e:
