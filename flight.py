@@ -8,7 +8,7 @@ import cv2
 from cv_bridge import CvBridge
 import time
 from ultralytics import YOLO
-import os
+from deep_sort_realtime.deepsort_tracker import DeepSort
 
 
 class DroneController(Node):
