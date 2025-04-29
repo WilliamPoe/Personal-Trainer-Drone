@@ -72,6 +72,14 @@ class Tracker(Node):
                 if cls_id == 0 and conf > 0.5:  # Class 0 = person
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
                     boxes.append((x1, y1, x2, y2))
+                    padding = 0.1
+                    dx = int((x2 - x1) * padding)
+                    dy = int((y2 - y1) * padding)
+
+                    x1 = max(0, x1 - dx)
+                    y1 = max(0, y1 - dy)
+                    x2 = min(img_width, x2 + dx)
+                    y2 = min(img_height, y2 + dy)
         return boxes
 
     def select_target(self, boxes):
