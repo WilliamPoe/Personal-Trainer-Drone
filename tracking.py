@@ -5,6 +5,7 @@ from sensor_msgs.msg import Image
 import cv2
 from cv_bridge import CvBridge
 from ultralytics import YOLO
+import os
 
 class Tracker(Node):
     def __init__(self):
@@ -13,19 +14,32 @@ class Tracker(Node):
         self.camera_sub = self.create_subscription(Image, '/bebop/camera/image_raw', self.listener_callback, 10)
         self.bridge = CvBridge()
 
-        # Load YOLOv5 or YOLOv8 model - pretrained on COCO
-        self.model = YOLO("yolov8n.pt")  # You can use yolov5s.pt or yolov8s.pt if you prefer
+        self.model = YOLO("yolov8n.pt")
 
         self.tracker = None
         self.tracking = False
+
+        # For recording
+        self.video_writer = None
+        self.record_path = os.path.expanduser("~/tracking_output.mp4")
+        self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        self.fps = 30  # You can adjust this based on your actual stream
+
+        self.video_initialized = False
 
     def listener_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
             height, width = cv_image.shape[:2]
 
+            # Initialize video writer
+            if not self.video_initialized:
+                self.video_writer = cv2.VideoWriter(self.record_path, self.fourcc, self.fps, (width, height))
+                self.video_initialized = True
+                self.get_logger().info(f"Recording started: {self.record_path}")
+
             if not self.tracking:
-                boxes = self.detect_people(cv_image)
+                boxes = self.detect_people(cv_image, width, height)
 
                 if boxes:
                     (x1, y1, x2, y2) = self.select_target(boxes)
@@ -42,17 +56,19 @@ class Tracker(Node):
                     cx = x + w_box // 2
                     cy = y + h_box // 2
 
-                    # Draw box + center point
                     cv2.rectangle(cv_image, (x, y), (x + w_box, y + h_box), (0, 255, 0), 2)
                     cv2.circle(cv_image, (cx, cy), 5, (0, 0, 255), -1)
 
                     offset_x = cx - width // 2
                     offset_y = cy - height // 2
                     self.get_logger().info(f"Offset: x={offset_x}, y={offset_y}")
-
                 else:
                     self.get_logger().info("Lost tracking. Waiting to re-initialize.")
                     self.tracking = False
+
+            # Record the frame
+            if self.video_writer:
+                self.video_writer.write(cv_image)
 
             cv2.imshow('Tracking Feed', cv_image)
             cv2.waitKey(1)
@@ -60,8 +76,7 @@ class Tracker(Node):
         except Exception as e:
             self.get_logger().error(f"Image processing failed: {e}")
 
-    def detect_people(self, frame):
-        # Use YOLO to detect people in the frame
+    def detect_people(self, frame, img_width, img_height):
         results = self.model(frame)
         boxes = []
 
@@ -69,9 +84,8 @@ class Tracker(Node):
             for box in r.boxes:
                 cls_id = int(box.cls[0])
                 conf = float(box.conf[0])
-                if cls_id == 0 and conf > 0.5:  # Class 0 = person
+                if cls_id == 0 and conf > 0.5:
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
-                    boxes.append((x1, y1, x2, y2))
                     padding = 0.1
                     dx = int((x2 - x1) * padding)
                     dy = int((y2 - y1) * padding)
@@ -80,26 +94,23 @@ class Tracker(Node):
                     y1 = max(0, y1 - dy)
                     x2 = min(img_width, x2 + dx)
                     y2 = min(img_height, y2 + dy)
+
+                    boxes.append((x1, y1, x2, y2))
         return boxes
 
     def select_target(self, boxes):
-        # Choose the largest person by area
-        largest = max(boxes, key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))
-        return largest
+        return max(boxes, key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))
 
 def main(args=None):
     rclpy.init(args=args)
-
     track = Tracker()
-
-    rclpy.spin(track)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    track.destroy_node()
-    rclpy.shutdown()
-
+    try:
+        rclpy.spin(track)
+    finally:
+        if track.video_writer:
+            track.video_writer.release()
+        track.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
