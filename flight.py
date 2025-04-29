@@ -3,11 +3,8 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Empty
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import Image
-import cv2
-from cv_bridge import CvBridge
 import time
-from ultralytics import YOLO
+
 
 
 class DroneController(Node):
@@ -16,32 +13,17 @@ class DroneController(Node):
 
         self.takeoff_pub = self.create_publisher(Empty, '/bebop/takeoff', 10)
         self.land_pub = self.create_publisher(Empty, '/bebop/land', 10)
-        self.camera_sub = self.create_subscription(Image, '/bebop/camera/image_raw', self.listener_callback, 10)
+        self.move_pub = self.create_publisher(Twist, '/bebop/cmd_vel', 10)
 
 
         self.timer_count = 0
-        self.bridge = CvBridge()
         self.msg = Empty()
-        self.model = YOLO("yolov8n.pt")
 
-        #self.get_logger().info('Preparing to takeoff!')
+
+        self.get_logger().info('Preparing to takeoff!')
         
         # Takeoff after 1 sec 
-        #self.create_timer(1.0, self.takeoff)
-
-    def listener_callback(self, msg):
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-
-            result = self.model.track(cv_image, persist=True)
-
-            frame_ = result[0].plot()
-
-            cv2.imshow('Camera Feed', frame_)
-            cv2.waitKey(1)
-            
-        except Exception as e:
-            self.get_logger().error(f"Could not convert image: {e}")
+        self.create_timer(1.0, self.takeoff)
 
     def takeoff(self):
         self.get_logger().info('Taking off!')
