@@ -25,37 +25,52 @@ class DroneController(Node):
         # Takeoff after 1 sec 
         self.create_timer(1.0, self.takeoff)
 
+        self.create_timer(30.0, self.safe_land)
+
+    #Rename to hover possibly
+    def stop_movement(self):
+        stopmsg = Twist()
+        self.get_logger().info('Stopping Movement!')
+        self.move_pub.publish(stopmsg)
+
     def takeoff(self):
         self.get_logger().info('Taking off!')
         self.takeoff_pub.publish(self.msg)
 
+        ascendmsg = Twist()
+        ascendmsg.linear.z = 0.3
+        self.move_pub.publish(ascendmsg)
+
+        self.create_timer(3.0, self.stop_movement)
+
         # Timer for landing 
-        self.countdown_to_land
+        self.create_timer(20.0, self.land)
 
-    def countdown_to_land(self):
-        start = time.monotonic()
-        elapsed = 0.0
+        self.takeoff = lambda: None
 
-        while elapsed <= 20:
-            elapsed = time.monotonic() - start
-            self.get_logger().info(f"Time taken: {elapsed:.2f} seconds")
-            time.sleep(1)
-        
-        
+    def land(self):
+        desendmsg = Twist()
+        desendmsg.linear.z = -0.3
+        self.move_pub.publish(desendmsg)
+
+        self.create_timer(1.5, self.stop_movement)
+
         self.get_logger().info('Landing!')
         self.land_pub.publish(self.msg)
         self.get_logger().info('Shutting down.')
+        self.landed = True
         rclpy.shutdown()
-            
-        ## This is old still needs testing ##
-        #if self.timer_count < 30:
-        #    self.get_logger().info(f"Time left before landing: {30 - self.timer_count} sec")
-        #    self.timer_count += 1
-        #else:
-        #    self.get_logger().info('Landing!')
-        #    self.land_pub.publish(self.msg)
-        #    self.get_logger().info('Shutting down.')
-        #    rclpy.shutdown()
+
+    def safe_land(self):
+        if not self.landed:
+            self.get_logger().warn('Safe Landing!')
+            self.land_pub.publish(self.msg)
+            self.get_logger().info('Shutting down.')
+            rclpy.shutdown()
+
+
+
+    #def tracking(self, x, y, height, width):
 
 def main(args=None):
     rclpy.init(args=args)
