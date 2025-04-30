@@ -6,6 +6,7 @@ import cv2
 from cv_bridge import CvBridge
 from ultralytics import YOLO
 import os
+from flight import DroneController
 
 class Tracker(Node):
     def __init__(self):
@@ -18,6 +19,8 @@ class Tracker(Node):
 
         self.tracker = None
         self.tracking = False
+
+        self.Drone_Controller = DroneController()
 
         # For recording
         self.video_writer = None
@@ -59,9 +62,12 @@ class Tracker(Node):
                     cv2.rectangle(cv_image, (x, y), (x + w_box, y + h_box), (0, 255, 0), 2)
                     cv2.circle(cv_image, (cx, cy), 5, (0, 0, 255), -1)
 
-                    offset_x = cx - width // 2
-                    offset_y = cy - height // 2
-                    self.get_logger().info(f"Offset: x={offset_x}, y={offset_y}")
+                    x_offset = cx - width // 2
+                    y_offset = cy - height // 2
+                    self.get_logger().info(f"Offset: x={x_offset}, y={y_offset}")
+
+                    self.Drone_Controller.tracking(x_offset, y_offset)
+
                 else:
                     self.get_logger().info("Lost tracking. Waiting to re-initialize.")
                     self.tracking = False

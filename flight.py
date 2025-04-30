@@ -38,10 +38,10 @@ class DroneController(Node):
         self.takeoff_pub.publish(self.msg)
 
         ascendmsg = Twist()
-        ascendmsg.linear.z = 0.3
+        ascendmsg.linear.z = 0.5
         self.move_pub.publish(ascendmsg)
 
-        self.create_timer(3.0, self.stop_movement)
+        self.create_timer(7.5, self.stop_movement)
 
         # Timer for landing 
         self.create_timer(20.0, self.land)
@@ -50,10 +50,10 @@ class DroneController(Node):
 
     def land(self):
         desendmsg = Twist()
-        desendmsg.linear.z = -0.3
+        desendmsg.linear.z = -0.5
         self.move_pub.publish(desendmsg)
 
-        self.create_timer(1.5, self.stop_movement)
+        self.create_timer(3.5, self.stop_movement)
 
         self.get_logger().info('Landing!')
         self.land_pub.publish(self.msg)
@@ -68,9 +68,30 @@ class DroneController(Node):
             self.get_logger().info('Shutting down.')
             rclpy.shutdown()
 
+    def tracking(self, x_offset, y_offset):
+        min_pixels = 50
+        movemsg = Twist()
 
+        if abs(x_offset) > min_pixels:
+            if x_offset > 0:
+                movemsg.linear.x = 0.3
+                self.move_pub.publish(movemsg)
+            else:
+                movemsg.linear.x = -0.3
+                self.move_pub.publish(movemsg)
+        else:
+            self.stop_movement
 
-    #def tracking(self, x, y, height, width):
+        if abs(y_offset) > min_pixels:
+            if y_offset > 0:
+                movemsg.linear.z = -0.3
+                self.move_pub.publish(movemsg)
+            else:
+                movemsg.linear.z = 0.3
+                self.move_pub.publish(movemsg)
+        else:
+            self.stop_movement
+
 
 def main(args=None):
     rclpy.init(args=args)
