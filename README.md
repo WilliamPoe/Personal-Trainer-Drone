@@ -6,12 +6,63 @@ These are scripts for using the ROS2 package [ros2_bebop_driver](https://github.
 This project develops an autonomous drone trainer that tracks and records a user in real-time. Using computer vision and machine learning, the drone tracks a user while capturing video, enabling hands-free recording for sports, and fitness.
 
 ### Methodology
-This project will utilizes a Parrot Bebop 2 drone as the hardware platform, using its onboard camera and flight capabilities. The Parrot ARSDK is used to establish communication and control between the drone and a ground station. For real-time user tracking, OpenCV will process the video stream to detect and follow the target using computer vision techniques. YOLOv8 is used to to enhance object detection accuracy, particularly in dynamic environments.
+This project will utilizes a Parrot Bebop 2 drone as the hardware platform, using its onboard camera and flight capabilities. The Parrot ARSDK is used to establish communication and control between the drone and a ground station. For real-time user tracking, OpenCV will process the video stream to detect and follow the target using computer vision techniques. YOLOv8 is used to enhance object detection accuracy, particularly in dynamic environments.
 
 ![Drone](https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/13064385/Parrot-Bebop_2-review-07.0.0.1453474367.jpg?quality=90&strip=all&crop=0,0,100,100)
 
+## How to use
+
+Follow the install for the [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver). Then download flight.py and tracking.py and place them inside the scripts folder inside the ros2_bebop_driver package. 
+
+These files need to be added to the CMakeLists.txt : 
+
+```
+install(PROGRAMS
+	scripts/flight.py
+	DESTINATION lib/${PROJECT_NAME}
+	)
+install(PROGRAMS
+	scripts/tracking.py
+	DESTINATION lib/${PROJECT_NAME}
+	)
+```
+
+Then you need to make the flight.py and tracking.py executables :
+
+```
+chmod +x scripts/flight.py scripts/tracking.py
+```
+
+Now connect to the drone in a terminal :
+
+```
+source ros2_ws/install/setup.bash
+ros2 launch ros2_bebop_driver bebop_node_launch.xml ip:=BEBOP.IP.ADDRESS
+```
+
+Open a new terminal and run :
+
+```
+cd /ros2ws/
+colcon build
+source install/setup.bash
+```
+
+Now open two other terminals and run:
+
+```
+source install/setup.bash
+ros2 run ros2_bebop_driver flight.py
+```
+
+```
+source install/setup.bash
+ros2 run ros2_bebop_driver tracking.py
+```
+
 
 ## Requirements
+
 [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver)
 
 [YOLO V8](https://github.com/ultralytics/ultralytics)
