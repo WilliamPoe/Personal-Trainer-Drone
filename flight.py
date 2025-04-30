@@ -95,31 +95,29 @@ class DroneController(Node):
 
     def tracking(self, x_offset, y_offset):
         min_pixels = 50
-        lrmsg = Twist()
         movemsg = Twist()
         if self.emerg_land:
             self.get_logger().warn('Safe landing started!')
             return
         # Left and right
+
         if abs(x_offset) > min_pixels:
             if x_offset > 0:
-                lrmsg.linear.y = -0.3
-                self.move_pub.publish(lrmsg)
+                movemsg.linear.y = -0.3
             else:
-                lrmsg.linear.y = 0.3
-                self.move_pub.publish(lrmsg)
-        else:
-            self.stop_movement()
+                movemsg.linear.y = 0.3
         # Up and down
         if abs(y_offset) > min_pixels:
             if y_offset > 0:
                 movemsg.linear.x = -0.2
-                self.move_pub.publish(movemsg)
             else:
                 movemsg.linear.x = 0.2
-                self.move_pub.publish(movemsg)
-        else:
+
+        if movemsg.linear.x == 0.0 and movemsg.linear.y == 0.0:
             self.stop_movement()
+
+        else:
+            self.move_pub.publish(movemsg)
 
 
 def main(args=None):
