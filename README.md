@@ -13,5 +13,12 @@ These are scripts for using the ROS2 package [ros2_bebop_driver](https://github.
 
 
 ## Requirements
+[ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver)
  [YOLO V8](https://github.com/ultralytics/ultralytics)
+ [Open CV](https://github.com/ultralytics/ultralytics) 
+ [ROS2_foxy](https://docs.ros.org/en/foxy/index.html)
+ [Ubuntu 20.04](https://www.releases.ubuntu.com/focal/)
+ 
+ 
+ 
  
