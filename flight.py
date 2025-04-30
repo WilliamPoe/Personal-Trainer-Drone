@@ -18,79 +18,108 @@ class DroneController(Node):
 
         self.timer_count = 0
         self.msg = Empty()
+        self.landed = False
+        self.emerg_land = False
 
 
         self.get_logger().info('Preparing to takeoff!')
         
         # Takeoff after 1 sec 
-        self.create_timer(1.0, self.takeoff)
+        self.takeoff_timer = self.create_timer(1.0, self.takeoff)
+        # Climb after 2 sec
+        self.climb_timer = self.create_timer(2, self.climb)
 
-        self.create_timer(30.0, self.safe_land)
+        self.create_timer(65.0, self.safe_land)
 
     #Rename to hover possibly
     def stop_movement(self):
         stopmsg = Twist()
         self.get_logger().info('Stopping Movement!')
         self.move_pub.publish(stopmsg)
+        if hasattr(self, 'stop_timer') and self.stop_timer is not None:
+            self.stop_timer.cancel()
+            self.stop_timer = None
 
     def takeoff(self):
         self.get_logger().info('Taking off!')
         self.takeoff_pub.publish(self.msg)
+        self.takeoff_timer.cancel()
 
+        # Timer for landing 
+        self.create_timer(60.0, self.land)
+
+        self.takeoff = lambda: None
+    
+    def climb(self):
+        self.get_logger().info('Climbing!')
         ascendmsg = Twist()
         ascendmsg.linear.z = 0.5
         self.move_pub.publish(ascendmsg)
+        self.climb_timer.cancel()
 
-        self.create_timer(7.5, self.stop_movement)
-
-        # Timer for landing 
-        self.create_timer(20.0, self.land)
-
-        self.takeoff = lambda: None
+        self.stop_timer = self.create_timer(5.0, self.stop_movement)
 
     def land(self):
-        desendmsg = Twist()
-        desendmsg.linear.z = -0.5
-        self.move_pub.publish(desendmsg)
-
-        self.create_timer(3.5, self.stop_movement)
-
-        self.get_logger().info('Landing!')
-        self.land_pub.publish(self.msg)
-        self.get_logger().info('Shutting down.')
-        self.landed = True
-        rclpy.shutdown()
-
-    def safe_land(self):
         if not self.landed:
-            self.get_logger().warn('Safe Landing!')
+            desendmsg = Twist()
+            desendmsg.linear.z = -0.5
+            self.move_pub.publish(desendmsg)
+
+            self.stop_timer = self.create_timer(1.5, self.stop_movement)
+
+            self.get_logger().info('Landing!')
             self.land_pub.publish(self.msg)
             self.get_logger().info('Shutting down.')
-            rclpy.shutdown()
+            self.landed = True
+
+    def safe_land(self):
+        self.emerg_land = True
+        self.get_logger().warn('Safe Landing!')
+        self.land_pub.publish(self.msg)
+        self.landed = True
+        self.get_logger().info('Shutting down.')
+        rclpy.shutdown()
+
+    def find_turn(self):
+        turnmsg = Twist()
+        angle_rad = 1.57
+        speed = 0.3
+        self.get_logger().info('Turning to find person!')
+        # Assuming this is a right turn
+        turnmsg.angular.z = -speed
+        self.time_start = time.monotonic()
+        while time.monotonic() - self.time_start < angle_rad / speed:
+            self.move_pub.publish(turnmsg)
+            time.sleep(0.1)
+        self.stop_movement()
 
     def tracking(self, x_offset, y_offset):
         min_pixels = 50
+        lrmsg = Twist()
         movemsg = Twist()
-
+        if self.emerg_land:
+            self.get_logger().warn('Safe landing started!')
+            return
+        # Left and right
         if abs(x_offset) > min_pixels:
             if x_offset > 0:
-                movemsg.linear.x = 0.3
-                self.move_pub.publish(movemsg)
+                lrmsg.linear.y = -0.3
+                self.move_pub.publish(lrmsg)
             else:
-                movemsg.linear.x = -0.3
-                self.move_pub.publish(movemsg)
+                lrmsg.linear.y = 0.3
+                self.move_pub.publish(lrmsg)
         else:
-            self.stop_movement
-
+            self.stop_movement()
+        # Up and down
         if abs(y_offset) > min_pixels:
             if y_offset > 0:
-                movemsg.linear.z = -0.3
+                movemsg.linear.x = -0.2
                 self.move_pub.publish(movemsg)
             else:
-                movemsg.linear.z = 0.3
+                movemsg.linear.x = 0.2
                 self.move_pub.publish(movemsg)
         else:
-            self.stop_movement
+            self.stop_movement()
 
 
 def main(args=None):
