@@ -1,5 +1,7 @@
 ## Personal Trainer Drone
 
+These are scripts for using the ROS2 package [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver) to allow the Parrot Bebop 2 Drone to follow a person in real time.
+
 ### Abstract
 This project develops an autonomous drone trainer that tracks and records a user in real-time. Using computer vision and machine learning, the drone tracks a user while capturing video, enabling hands-free recording for sports, and fitness.
 
@@ -8,16 +10,17 @@ This project will utilizes a Parrot Bebop 2 drone as the hardware platform, usin
 
 ![Drone](https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/13064385/Parrot-Bebop_2-review-07.0.0.1453474367.jpg?quality=90&strip=all&crop=0,0,100,100)
 
- 
-These are scripts for using the ROS2 package [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver) to allow the Parrot Bebop 2 Drone to follow a person in real time.
-
 
 ## Requirements
 [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver)
- [YOLO V8](https://github.com/ultralytics/ultralytics)
- [Open CV](https://github.com/ultralytics/ultralytics) 
- [ROS2_foxy](https://docs.ros.org/en/foxy/index.html)
- [Ubuntu 20.04](https://www.releases.ubuntu.com/focal/)
+
+[YOLO V8](https://github.com/ultralytics/ultralytics)
+
+[Open CV](https://github.com/ultralytics/ultralytics) 
+
+[ROS2_foxy](https://docs.ros.org/en/foxy/index.html)
+
+[Ubuntu 20.04](https://www.releases.ubuntu.com/focal/)
  
  
  
