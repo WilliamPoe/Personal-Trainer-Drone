@@ -16,7 +16,6 @@ class DroneController(Node):
         self.move_pub = self.create_publisher(Twist, '/bebop/cmd_vel', 10)
 
 
-        self.timer_count = 0
         self.msg = Empty()
         self.landed = False
         self.emerg_land = False
@@ -29,13 +28,13 @@ class DroneController(Node):
         # Climb after 2 sec
         self.climb_timer = self.create_timer(2, self.climb)
         # Emergency land after 65 sec
-        self.create_timer(65.0, self.safe_land)
+        self.create_timer(35.0, self.safe_land)
 
     def stop_movement(self): # Stops the movement of the drone and starts to hover
         stopmsg = Twist()
         self.get_logger().info('Stopping Movement!')
         self.move_pub.publish(stopmsg)
-        if hasattr(self, 'stop_timer') and self.stop_timer is not None:
+        if hasattr(self, 'stop_timer') and self.stop_timer is not None: # If there is a stop timer created
             self.stop_timer.cancel()
             self.stop_timer = None
 
@@ -45,7 +44,7 @@ class DroneController(Node):
         self.takeoff_timer.cancel()
 
         # Timer for landing 
-        self.create_timer(60.0, self.land)
+        self.create_timer(30.0, self.land)
     
     def climb(self): # Drone climb to a safe height
         self.get_logger().info('Climbing!')
@@ -89,8 +88,8 @@ class DroneController(Node):
             self.move_pub.publish(turnmsg)
             time.sleep(0.1)
         self.stop_movement()
-
-    def tracking(self, x_offset, y_offset): # Tracking function for tracking file to call to move the drone around
+    
+    def tracking(self, x_offset, y_offset): # Tracking function to be called keeps person in the. x_offset, y_offset are offsets from center
         min_pixels = 35
         movemsg = Twist()
         if self.emerg_land: # Will not move if safe landing is started
@@ -99,21 +98,21 @@ class DroneController(Node):
         # Left and right
         if abs(x_offset) > min_pixels:
             if x_offset > 0:
-                movemsg.linear.y = -1.0
+                movemsg.linear.y = -.75
             else:
-                movemsg.linear.y = 1.0
+                movemsg.linear.y = .75
         # Up and down
         if abs(y_offset) > min_pixels:
             if y_offset > 0:
-                movemsg.linear.x = -1.0
+                movemsg.linear.x = -.75
             else:
-                movemsg.linear.x = 1.0
+                movemsg.linear.x = .75
 
-        if movemsg.linear.x == 0.0 and movemsg.linear.y == 0.0: 
+        if movemsg.linear.x == 0.0 and movemsg.linear.y == 0.0: # Stop movement of the drone if centered
             self.stop_movement()
 
         else:
-            self.move_pub.publish(movemsg)
+            self.move_pub.publish(movemsg) # Publish movements
 
 
 def main(args=None):
