@@ -12,20 +12,9 @@ This project will utilizes a Parrot Bebop 2 drone as the hardware platform, usin
 
 ## How to use
 
-Follow the install for the [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver). Then download flight.py and tracking.py and place them inside the scripts folder inside the ros2_bebop_driver package. 
+Follow the install for the [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver). Then download flight.py, tracking.py, and CMakeLists.txt and place them inside the scripts folder inside the ros2_bebop_driver package. 
 
-These files need to be added to the CMakeLists.txt : 
-
-```
-install(PROGRAMS
-	scripts/flight.py
-	DESTINATION lib/${PROJECT_NAME}
-	)
-install(PROGRAMS
-	scripts/tracking.py
-	DESTINATION lib/${PROJECT_NAME}
-	)
-```
+Replace the CMakeLists.txt file in the ros2_bebop_driver package with the one provided. 
 
 Then you need to make the flight.py and tracking.py executables :
 
@@ -48,7 +37,7 @@ colcon build
 source install/setup.bash
 ```
 
-Now open two other terminals and run:
+Now open two other terminals and run :
 
 ```
 source install/setup.bash
