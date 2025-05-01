@@ -9,6 +9,7 @@ import os
 from flight import DroneController
 
 class Tracker(Node):
+    #initializes the Tracker class by setting up the ROS node, subscribing to the drone's camera feed, and preparing tools like CvBridge, the YOLOv8 model, a video writer, and a drone controller.
     def __init__(self):
         super().__init__('tracking')
 
@@ -26,11 +27,12 @@ class Tracker(Node):
         self.video_writer = None
         self.record_path = os.path.expanduser("~/tracking_output.mp4")
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.fps = 30  # You can adjust this based on your actual stream
+        self.fps = 30
 
         self.video_initialized = False
-
-    def listener_callback(self, msg): # Manages all the video stream
+#The listener_callback function processes each incoming image
+#It draws tracking visuals, calculates the target's offset from the frame center to guide the drone's movement, and displays and records the video feed.
+    def listener_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
             height, width = cv_image.shape[:2]
@@ -56,13 +58,6 @@ class Tracker(Node):
                 success, bbox = self.tracker.update(cv_image)
                 if success:
                     (x, y, w_box, h_box) = [int(v) for v in bbox]
-
-                    # Avoid tracking ground
-                    if y + h_box > 0.9 * height or w_box * h_box < 500:
-                        self.get_logger().warn("Tracker drifted. Reinitializing.")
-                        self.tracking = False
-                        return
-
                     cx = x + w_box // 2
                     cy = y + h_box // 2
 
@@ -75,27 +70,9 @@ class Tracker(Node):
 
                     self.Drone_Controller.tracking(x_offset, y_offset)
 
-                    # Periodic realignment
-                    self.frame_count += 1
-                    if self.frame_count % self.realign_interval == 0:
-                        boxes = self.detect_people(cv_image, width, height)
-                        if boxes:
-                            (x1, y1, x2, y2) = self.select_target(boxes)
-                            new_bbox = (x1, y1, x2 - x1, y2 - y1)
-                            self.tracker = cv2.TrackerCSRT_create()
-                            self.tracker.init(cv_image, new_bbox)
-                            self.get_logger().info("Tracker realigned.")
                 else:
-                    self.get_logger().info("Lost tracking. Attempting to re-detect.")
+                    self.get_logger().info("Lost tracking. Waiting to re-initialize.")
                     self.tracking = False
-                    boxes = self.detect_people(cv_image, width, height)
-                    if boxes:
-                        (x1, y1, x2, y2) = self.select_target(boxes)
-                        bbox = (x1, y1, x2 - x1, y2 - y1)
-                        self.tracker = cv2.TrackerCSRT_create()
-                        self.tracker.init(cv_image, bbox)
-                        self.tracking = True
-                        self.get_logger().info("Tracker re-initialized.")
 
             # Record the frame
             if self.video_writer:
@@ -106,8 +83,9 @@ class Tracker(Node):
 
         except Exception as e:
             self.get_logger().error(f"Image processing failed: {e}")
-
-    def detect_people(self, frame, img_width, img_height): # Detects people in the frame
+# People who have a above a 50% cofidence level will be given a box
+# There is also a 2.5% buffer
+    def detect_people(self, frame, img_width, img_height):
         results = self.model(frame)
         boxes = []
 
@@ -128,8 +106,8 @@ class Tracker(Node):
 
                     boxes.append((x1, y1, x2, y2))
         return boxes
-
-    def select_target(self, boxes): # Selects the target in the frame
+# This is will target the biggest box as the target
+    def select_target(self, boxes):
         return max(boxes, key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))
 
 def main(args=None):
