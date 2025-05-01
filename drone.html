@@ -1,61 +1,81 @@
 <!doctype html>
+<!-- Declares the document type and version of HTML (HTML5) -->
+
 <html lang="en">
+<!-- Root element of the HTML document, with language set to English -->
+
 <head>
+    <!-- Head section contains metadata and styles -->
     <meta charset="UTF-8">
+    <!-- Sets character encoding to UTF-8 for full character support -->
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Ensures the site is responsive on all devices -->
+
     <title>Drone Coach</title>
+    <!-- Title of the webpage shown on the browser tab -->
+
     <link rel="stylesheet" href="style.css">
+    <!-- Links to an external CSS file -->
+
     <style>
-        /* CSS for responsiveness */
+        /* Internal CSS styling for layout and responsiveness */
+
         .container {
             display: flex;
             flex-wrap: wrap;
         }
+        /* Main layout uses Flexbox and wraps on smaller screens */
 
         .left-content, .right-content {
             flex: 1 1 300px;
             margin: 10px;
         }
+        /* Sets flexible widths for both left and right sections */
 
         .video-wrapper {
             display: flex;
             justify-content: center;
             margin-top: 20px;
         }
+        /* Centers videos horizontally */
 
         iframe {
             width: 100%;
             max-width: 560px;
             height: 315px;
         }
+        /* Styles for embedded YouTube videos */
 
-        /* Style for video and other elements */
         .demo-video {
             margin: 10px;
             width: 300px;
             height: 200px;
         }
+        /* Styles for test/demo videos */
 
-        /* Flexbox layout for side-by-side videos */
         .video-container {
             display: flex;
             justify-content: space-between;
-            gap: 20px; /* Add space between the video sections */
+            gap: 20px;
         }
+        /* Container for side-by-side video sections with spacing */
 
         .video-section {
-            width: 48%; /* Each section will take up about half of the container */
+            width: 48%;
         }
+        /* Makes each video section occupy roughly half the width */
 
-        /* Ensure videos and other elements adjust properly */
         .test-videos, .Demo-videos {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        /* Aligns content vertically and centers it */
 
-        /* Responsive design */
         @media (max-width: 768px) {
+            /* Responsive styling for smaller screens */
+
             .video-container {
                 flex-direction: column;
                 gap: 10px;
@@ -76,10 +96,16 @@
         }
     </style>
 </head>
+
 <body>
+    <!-- Body contains all visible content -->
 
     <div class="container">
+        <!-- Flex container for left and right content -->
+
         <div class="left-content">
+            <!-- Left column with page content -->
+
             <h1>WELCOME TO DRONE COACH</h1>
             <hr>
 
@@ -96,24 +122,30 @@
             <hr>
 
             <p style="text-align: center;">
-                <a href="https://github.com/WilliamPoe/Personal-Trainer-Drone" style = 'color:red' target="_blank">
+                <a href="https://github.com/WilliamPoe/Personal-Trainer-Drone" style='color:red' target="_blank">
                     Here is a GitHub link to the source code.
                 </a>
             </p>
         </div>
 
         <div class="right-content">
+            <!-- Right column with an image/poster -->
+
             <div class="poster-container">
                 <h2>Poster Image</h2>
                 <img class="poster" src="https://warren.sewanee.edu/darbnjr0/robotic/drone_poster.png" alt="Drone Coach Poster">
+                <!-- Displays an image with a caption -->
             </div>
         </div>
     </div>
 
     <div class="video-container">
+        <!-- Container holding two video sections side-by-side -->
+
         <div class="video-section">
             <h3>Test Videos</h3>
             <div class="video-wrapper">
+                <!-- Embeds two local test videos -->
                 <video class="demo-video" controls>
                     <source src="https://warren.sewanee.edu/darbnjr0/robotic/Drone_test.mp4" type="video/mp4">
                     Your browser does not support the video tag.
@@ -128,9 +160,12 @@
 
         <div class="video-section">
             <h3>Demo Videos</h3>
+            <!-- One embedded YouTube video and one local demo video -->
+
             <div class="video-wrapper">
                 <iframe src="https://www.youtube.com/embed/mi2ePa3ZGfA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
+
             <div class="video-wrapper">
                 <video class="demo-video" controls>
                     <source src="https://warren.sewanee.edu/darbnjr0/robotic/IMG_3099.MOV" type="video/mp4">
