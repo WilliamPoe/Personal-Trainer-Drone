@@ -9,6 +9,7 @@ import os
 from flight import DroneController
 
 class Tracker(Node):
+    #initializes the Tracker class by setting up the ROS node, subscribing to the drone's camera feed, and preparing tools like CvBridge, the YOLOv8 model, a video writer, and a drone controller.
     def __init__(self):
         super().__init__('tracking')
 
@@ -26,10 +27,11 @@ class Tracker(Node):
         self.video_writer = None
         self.record_path = os.path.expanduser("~/tracking_output.mp4")
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.fps = 30  # You can adjust this based on your actual stream
+        self.fps = 30
 
         self.video_initialized = False
-
+#The listener_callback function processes each incoming image
+#It draws tracking visuals, calculates the target's offset from the frame center to guide the drone's movement, and displays and records the video feed.
     def listener_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -81,7 +83,8 @@ class Tracker(Node):
 
         except Exception as e:
             self.get_logger().error(f"Image processing failed: {e}")
-
+# People who have a above a 50% cofidence level will be given a box
+# There is also a 2.5% buffer
     def detect_people(self, frame, img_width, img_height):
         results = self.model(frame)
         boxes = []
@@ -103,7 +106,7 @@ class Tracker(Node):
 
                     boxes.append((x1, y1, x2, y2))
         return boxes
-
+# This is will target the biggest box as the target
     def select_target(self, boxes):
         return max(boxes, key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))
 
