@@ -1,85 +1,116 @@
 <!doctype html>
+<!-- Declares the document as an HTML5 document -->
+
 <html lang="en">
+<!-- Sets the language of the document to English -->
+
 <head>
+    <!-- Metadata and styles are defined inside the head -->
+
     <meta charset="UTF-8">
+    <!-- Sets the character encoding to UTF-8 for supporting most characters -->
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Ensures proper scaling on all devices (responsive design) -->
+
     <title>Drone Coach</title>
+    <!-- The title of the page shown in the browser tab -->
+
     <link rel="stylesheet" href="style.css">
+    <!-- Links to an external stylesheet for additional styling -->
+
     <style>
-        /* CSS for responsiveness */
+        /* Internal styles for layout and responsive design */
+
         .container {
             display: flex;
             flex-wrap: wrap;
         }
+        /* Flexbox container with wrapping for responsive layout */
 
         .left-content, .right-content {
             flex: 1 1 300px;
             margin: 10px;
         }
+        /* Both columns share space equally with a minimum width of 300px */
 
         .video-wrapper {
             display: flex;
             justify-content: center;
             margin-top: 20px;
         }
+        /* Centers the videos horizontally inside wrappers */
 
         iframe {
             width: 100%;
             max-width: 560px;
             height: 315px;
         }
+        /* Styles for embedded YouTube videos */
 
-        /* Style for video and other elements */
         .demo-video {
             margin: 10px;
             width: 300px;
             height: 200px;
         }
+        /* Styles for local video files */
 
-        /* Flexbox layout for side-by-side videos */
         .video-container {
             display: flex;
             justify-content: space-between;
-            gap: 20px; /* Add space between the video sections */
+            gap: 20px;
         }
+        /* Flex layout to place two video sections side-by-side */
 
         .video-section {
-            width: 48%; /* Each section will take up about half of the container */
+            width: 48%;
         }
+        /* Each section takes about half the container width */
 
-        /* Ensure videos and other elements adjust properly */
         .test-videos, .Demo-videos {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        /* Vertically stacks and centers content inside test/demo sections */
 
-        /* Responsive design */
         @media (max-width: 768px) {
+            /* Responsive styles for small screens */
+
             .video-container {
                 flex-direction: column;
                 gap: 10px;
             }
+            /* Stack video sections vertically and reduce gap */
 
             .video-section {
                 width: 100%;
             }
+            /* Each section takes full width */
 
             iframe {
                 width: 100%;
             }
+            /* Embedded videos stretch full width on small screens */
 
             .demo-video {
                 width: 100%;
                 height: auto;
             }
+            /* Local videos resize proportionally to screen width */
         }
     </style>
 </head>
+
 <body>
+    <!-- The visible content of the webpage -->
 
     <div class="container">
+        <!-- Main container with two sections: left and right -->
+
         <div class="left-content">
+            <!-- Left side of the layout -->
+
             <h1>WELCOME TO DRONE COACH</h1>
             <hr>
 
@@ -96,29 +127,37 @@
             <hr>
 
             <p style="text-align: center;">
-                <a href="https://github.com/WilliamPoe/Personal-Trainer-Drone" style = 'color:red' target="_blank">
+                <!-- Center-aligned link to the project's GitHub repository -->
+                <a href="https://github.com/WilliamPoe/Personal-Trainer-Drone" style='color:red' target="_blank">
                     Here is a GitHub link to the source code.
                 </a>
             </p>
         </div>
 
         <div class="right-content">
+            <!-- Right side of the layout -->
+
             <div class="poster-container">
                 <h2>Poster Image</h2>
+                <!-- Displays a promotional poster image -->
                 <img class="poster" src="https://warren.sewanee.edu/darbnjr0/robotic/drone_poster.png" alt="Drone Coach Poster">
             </div>
         </div>
     </div>
 
     <div class="video-container">
+        <!-- Container for side-by-side video content -->
+
         <div class="video-section">
             <h3>Test Videos</h3>
             <div class="video-wrapper">
+                <!-- Local test video 1 -->
                 <video class="demo-video" controls>
                     <source src="https://warren.sewanee.edu/darbnjr0/robotic/Drone_test.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
 
+                <!-- Local test video 2 -->
                 <video class="demo-video" controls>
                     <source src="https://warren.sewanee.edu/darbnjr0/robotic/Drone_test2.MOV" type="video/mp4">
                     Your browser does not support the video tag.
@@ -128,10 +167,14 @@
 
         <div class="video-section">
             <h3>Demo Videos</h3>
+
             <div class="video-wrapper">
+                <!-- Embedded YouTube demo video -->
                 <iframe src="https://www.youtube.com/embed/mi2ePa3ZGfA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
+
             <div class="video-wrapper">
+                <!-- Local demo video -->
                 <video class="demo-video" controls>
                     <source src="https://warren.sewanee.edu/darbnjr0/robotic/IMG_3099.MOV" type="video/mp4">
                     Your browser does not support the video tag.
