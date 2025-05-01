@@ -1,113 +1,144 @@
-body {
-    background-image: url('https://warren.sewanee.edu/darbnjr0/robotic/Drone_test.jpeg'); /* Image URL */
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    color: white; /* Use white text color for better contrast */
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    position: relative;
-}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Coach</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS for responsiveness */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
 
-body::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5); /* Dark overlay for better text visibility */
-    z-index: -1; /* Ensure the overlay is behind the content */
-}
+        .left-content, .right-content {
+            flex: 1 1 300px;
+            margin: 10px;
+        }
 
-.container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px; /* Optional: constrain the max width */
-    margin-bottom: 40px; /* Adds space between content and video */
-}
+        .video-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
-.left-content {
-    flex: 0 0 60%; /* Takes up 60% of the width */
-}
+        iframe {
+            width: 100%;
+            max-width: 560px;
+            height: 315px;
+        }
 
-.right-content {
-    flex: 0 0 35%; /* Takes up 35% of the width */
-    display: flex;
-    justify-content: flex-end; /* Aligns the poster image to the right */
-    align-items: flex-start;
-}
+        /* Style for video and other elements */
+        .demo-video {
+            margin: 10px;
+            width: 300px;
+            height: 200px;
+        }
 
-h1, h2, h3 {
-    text-align: left;
-}
+        /* Flexbox layout for side-by-side videos */
+        .video-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* Add space between the video sections */
+        }
 
-hr {
-    border: 1px solid rgba(255, 255, 255, 0.6); /* Slightly softer white */
-    margin: 20px 0;
-}
+        .video-section {
+            width: 48%; /* Each section will take up about half of the container */
+        }
 
-ul {
-    padding-left: 20px;
-}
+        /* Ensure videos and other elements adjust properly */
+        .test-videos, .Demo-videos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.poster-container h2 {
-    margin-bottom: 20px; /* Adds space between title and image */
-}
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .video-container {
+                flex-direction: column;
+                gap: 10px;
+            }
 
-.poster {
-    display: block;
-    margin: 20px auto;
-    max-width: 100%; /* Adjust max-width to prevent overflow */
-    height: auto;
-    border: 2px solid white;
-    border-radius: 8px;
-}
+            .video-section {
+                width: 100%;
+            }
 
-.video-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-}
+            iframe {
+                width: 100%;
+            }
 
-.video-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 20px;
-}
+            .demo-video {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
 
-video {
-    display: block;
-    margin: 20px 0; /* Make the margin consistent */
-    border: 2px solid white;
-    border-radius: 8px;
-}
+    <div class="container">
+        <div class="left-content">
+            <h1>WELCOME TO DRONE COACH</h1>
+            <hr>
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        padding: 10px;
-    }
+            <h2>AUTHORS:</h2>
+            <h3>Jenkins Darbney, Keith Rice, Srijan Basnet, William Poe</h3>
+            <hr>
 
-    .left-content, .right-content {
-        flex: 1 0 100%; /* Each section takes up the full width */
-        margin: 10px 0;
-    }
+            <h2>Facts about Drone Coach</h2>
+            <ul>
+                <li>It is an assistant to a coach helping train athletes.</li>
+                <li><i>There is an interface with a camera to capture videos and pictures.</i></li>
+                <li>It can serve as a timer for track athletes, record forms for basketball, soccer, and other sports, and report to coaches.</li>
+            </ul>
+            <hr>
 
-    .poster {
-        transform: translateX(0); /* Remove the translation to fit the screen */
-        max-width: 100%; /* Ensure the image doesn't overflow */
-    }
+            <p style="text-align: center;">
+                <a href="https://github.com/WilliamPoe/Personal-Trainer-Drone" style = 'color:red' target="_blank">
+                    Here is a GitHub link to the source code.
+                </a>
+            </p>
+        </div>
 
-    video {
-        width: 100%; /* Make the videos responsive */
-    }
-}
+        <div class="right-content">
+            <div class="poster-container">
+                <h2>Poster Image</h2>
+                <img class="poster" src="https://warren.sewanee.edu/darbnjr0/robotic/drone_poster.png" alt="Drone Coach Poster">
+            </div>
+        </div>
+    </div>
+
+    <div class="video-container">
+        <div class="video-section">
+            <h3>Test Videos</h3>
+            <div class="video-wrapper">
+                <video class="demo-video" controls>
+                    <source src="https://warren.sewanee.edu/darbnjr0/robotic/Drone_test.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+
+                <video class="demo-video" controls>
+                    <source src="https://warren.sewanee.edu/darbnjr0/robotic/Drone_test2.MOV" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <div class="video-section">
+            <h3>Demo Videos</h3>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/mi2ePa3ZGfA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-wrapper">
+                <video class="demo-video" controls>
+                    <source src="https://warren.sewanee.edu/darbnjr0/robotic/IMG_3099.MOV" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
