@@ -43,7 +43,7 @@ ros2 launch ros2_bebop_driver bebop_node_launch.xml ip:=BEBOP.IP.ADDRESS
 Open a new terminal and run :
 
 ```
-cd /ros2ws/
+cd /ros2_ws
 colcon build
 source install/setup.bash
 ```
@@ -65,7 +65,7 @@ ros2 run ros2_bebop_driver tracking.py
 
 [ros2_bebop_driver](https://github.com/jeremyfix/ros2_bebop_driver)
 
-[YOLO V8](https://github.com/ultralytics/ultralytics)
+[YOLOv8](https://github.com/ultralytics/ultralytics)
 
 [Open CV](https://github.com/ultralytics/ultralytics) 
 
