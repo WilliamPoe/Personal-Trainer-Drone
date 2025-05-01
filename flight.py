@@ -28,11 +28,10 @@ class DroneController(Node):
         self.takeoff_timer = self.create_timer(1.0, self.takeoff)
         # Climb after 2 sec
         self.climb_timer = self.create_timer(2, self.climb)
-
+        # Emergency land after 65 sec
         self.create_timer(65.0, self.safe_land)
 
-    #Rename to hover possibly
-    def stop_movement(self):
+    def stop_movement(self): # Stops the movement of the drone and starts to hover
         stopmsg = Twist()
         self.get_logger().info('Stopping Movement!')
         self.move_pub.publish(stopmsg)
@@ -40,17 +39,15 @@ class DroneController(Node):
             self.stop_timer.cancel()
             self.stop_timer = None
 
-    def takeoff(self):
+    def takeoff(self): # Drone takeoff call
         self.get_logger().info('Taking off!')
         self.takeoff_pub.publish(self.msg)
         self.takeoff_timer.cancel()
 
         # Timer for landing 
         self.create_timer(60.0, self.land)
-
-        self.takeoff = lambda: None
     
-    def climb(self):
+    def climb(self): # Drone climb to a safe height
         self.get_logger().info('Climbing!')
         ascendmsg = Twist()
         ascendmsg.linear.z = 0.5
@@ -59,7 +56,7 @@ class DroneController(Node):
 
         self.stop_timer = self.create_timer(5.0, self.stop_movement)
 
-    def land(self):
+    def land(self): # Drone land
         if not self.landed:
             desendmsg = Twist()
             desendmsg.linear.z = -0.5
@@ -72,7 +69,7 @@ class DroneController(Node):
             self.get_logger().info('Shutting down.')
             self.landed = True
 
-    def safe_land(self):
+    def safe_land(self): # Drone safe land
         self.emerg_land = True
         self.get_logger().warn('Safe Landing!')
         self.land_pub.publish(self.msg)
@@ -80,7 +77,7 @@ class DroneController(Node):
         self.get_logger().info('Shutting down.')
         rclpy.shutdown()
 
-    def find_turn(self):
+    def find_turn(self): # Was not able to get this implemented 
         turnmsg = Twist()
         angle_rad = 1.57
         speed = 0.3
@@ -93,27 +90,26 @@ class DroneController(Node):
             time.sleep(0.1)
         self.stop_movement()
 
-    def tracking(self, x_offset, y_offset):
-        min_pixels = 50
+    def tracking(self, x_offset, y_offset): # Tracking function for tracking file to call to move the drone around
+        min_pixels = 35
         movemsg = Twist()
-        if self.emerg_land:
+        if self.emerg_land: # Will not move if safe landing is started
             self.get_logger().warn('Safe landing started!')
             return
         # Left and right
-
         if abs(x_offset) > min_pixels:
             if x_offset > 0:
-                movemsg.linear.y = -0.3
+                movemsg.linear.y = -1.0
             else:
-                movemsg.linear.y = 0.3
+                movemsg.linear.y = 1.0
         # Up and down
         if abs(y_offset) > min_pixels:
             if y_offset > 0:
-                movemsg.linear.x = -0.2
+                movemsg.linear.x = -1.0
             else:
-                movemsg.linear.x = 0.2
+                movemsg.linear.x = 1.0
 
-        if movemsg.linear.x == 0.0 and movemsg.linear.y == 0.0:
+        if movemsg.linear.x == 0.0 and movemsg.linear.y == 0.0: 
             self.stop_movement()
 
         else:
